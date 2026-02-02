@@ -1,0 +1,375 @@
+\documentclass[11pt,a4paper]{article}
+
+% LANGUAGE AND FONTS
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+% MATHEMATICS
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools} % Mejora la tipografía matemática
+
+% LAYOUT
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+% MARGINS
+\geometry{
+  left=2cm,
+  right=2cm,
+  top=3cm,
+  bottom=3cm
+}
+\onehalfspacing
+
+% DOCUMENT DATA
+\newcommand{\titulo}{OLS Consistency and Matrix Formalization}
+\newcommand{\autor}{Aarón Rey Vázquez}
+\newcommand{\fecha}{\today}
+
+% HEADER AND FOOTER CONFIGURATION
+\setlength{\headheight}{14pt} % Fix for fancyhdr warning
+\pagestyle{fancy}
+\fancyhf{}
+% Header: Author on Left, Title on Right (Small font to fit)
+\fancyhead[L]{\small \autor}
+\fancyhead[R]{\small \titulo}
+% Footer: Page number centered
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt} % Returns the line for better separation
+
+% SECTION FORMATTING & SPACING
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection.}
+  {0.75em}
+  {\uppercase} % Titulos, distinto
+
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection.}
+  {0.75em}
+  {}
+
+% \titlespacing*{<command>}{<left>}{<before-sep>}{<after-sep>}
+% Los valores con 'plus' y 'minus' permiten a LaTeX ajustar el espacio dinámicamente.
+\titlespacing*{\section}
+  {0pt}
+  {4.5ex plus 1ex minus .2ex} % Espacio generoso antes de sección
+  {2.5ex plus .5ex}           % Espacio marcado después de sección
+
+\titlespacing*{\subsection}
+  {0pt}
+  {3.2ex plus .8ex minus .2ex} % Espacio intermedio antes de subsección
+  {1.8ex plus .3ex}            % Espacio moderado después de subsección
+
+% THEOREM ENVIRONMENTS
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+
+% TITLE PAGE
+\thispagestyle{plain} % Removes header from first page, keeps page number
+\hrule
+\begin{center}
+    \vspace*{1em}
+    {\LARGE\bfseries \titulo \par}
+    \vspace{0.8em}
+    {\Large \autor \par}
+    {\small \fecha}
+\end{center}
+\vspace{0.9em}
+\hrule
+\vspace{1.5em}
+
+\section{Derivation of the OLS Estimator for $\beta_1$}
+
+Consider the simple linear regression model
+\begin{equation}
+    y_i = \beta_0 + \beta_1 x_i + u_i, \quad i=1,\dots,n.
+\end{equation}
+
+The OLS method estimates the parameters by minimizing the sum of squared residuals:
+\begin{equation}
+    \min_{\beta_0,\beta_1} \sum_{i=1}^n \hat{u}_i^2 = \min_{\beta_0,\beta_1} \sum_{i=1}^n (y_i-\hat y_i)^2.
+\end{equation}
+
+Substituting $\hat{u}_i = y_i - (\beta_0 + \beta_1 x_i)$, this problem can be written as
+\begin{equation}
+    \min_{\beta_0,\beta_1} \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)^2.
+\end{equation}
+
+Taking the first-order condition with respect to $\beta_1$ yields
+\begin{equation}
+    \frac{\partial}{\partial \beta_1} \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)^2
+    = -2 \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)x_i = 0.
+\end{equation}
+
+\begin{definition}
+Solving the first-order condition with respect to $\beta_0$ yields
+\begin{equation}
+    \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x},
+\end{equation}
+where $\bar{y}$ and $\bar{x}$ denote the sample means of $y_i$ and $x_i$, respectively.
+\end{definition}
+
+Substituting this expression into the FOC for $\beta_1$ and simplifying leads to:
+\begin{align}
+    \sum^n_{i=1} \left[ y_i - (\bar{y} - \hat \beta_1 \bar{x}) - \hat \beta_1 x_i \right] x_i &= 0, \\
+    \sum^n_{i=1} \left[ (y_i - \bar{y})x_i - \hat \beta_1 (x_i - \bar{x})x_i \right] &= 0, \\
+    \sum_{i=1}^n (y_i - \bar{y})x_i - \hat{\beta}_1 \sum_{i=1}^n (x_i - \bar{x})x_i &= 0.
+\end{align}
+Solving for $\hat{\beta}_1$:
+\begin{equation}
+    \hat{\beta}_1 = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}.
+\end{equation}
+
+\section{Sampling Distribution of the OLS Estimator}
+\subsection{Unbiasedness: Conditional Mean}
+
+To derive the sampling distribution of $\hat{\beta}_1$, we begin by computing its expectation. Taking sample averages in the regression model yields
+\begin{equation}
+    \bar{y} = \beta_0 + \beta_1 \bar{x} + \bar{u}.
+\end{equation}
+
+Subtracting this expression from the original model gives
+\begin{equation}
+    y_i - \bar{y} = \beta_1 (x_i - \bar{x}) + (u_i - \bar{u}).
+\end{equation}
+
+Substituting into the OLS estimator previously calculated:
+\begin{align}
+    \hat{\beta}_1 &= \frac{\sum_{i=1}^n \color{blue}(x_i - \bar{x})\color{black}[\color{blue}\beta_1(x_i - \bar{x}) \color{black}+ (u_i - \bar{u})]}{\sum_{i=1}^n (x_i - \bar{x})^2} \\
+    &= \beta_1 + \frac{\sum_{i=1}^n (x_i - \bar{x})(u_i - \bar{u})}{\sum_{i=1}^n (x_i - \bar{x})^2}.
+\end{align}
+
+Taking expectations,
+\begin{equation}
+    \mathbb{E}(\hat{\beta}_1) = \color{blue}\beta_1 \color{black}+ \mathbb{E}\!\left( \frac{\sum_{i=1}^n (x_i - \bar{x})(u_i - \bar{u})}{\sum_{i=1}^n (x_i - \bar{x})^2} \right).
+\end{equation}
+
+Using the Law of Iterated Expectations, we write
+\begin{equation}
+    \mathbb{E}(\hat{\beta}_1) = \mathbb{E}\!\left[ \mathbb{E}(\hat{\beta}_1 \mid X) \right].
+\end{equation}
+
+From the expression
+\[
+    \hat{\beta}_1 = \beta_1 + \frac{\sum_{i=1}^n (x_i - \bar{x})(u_i - \bar{u})}{\sum_{i=1}^n (x_i - \bar{x})^2},
+\]
+it follows that
+\begin{equation}
+    \mathbb{E}(\hat{\beta}_1 \mid X) = \beta_1 + \frac{\sum_{i=1}^n (x_i - \bar{x})\, \mathbb{E}(u_i - \bar{u} \mid X)}{\sum_{i=1}^n (x_i - \bar{x})^2}.
+\end{equation}
+
+\begin{definition}
+Under the assumption of strict exogeneity,
+\begin{equation}
+    \color{red}\mathbb{E}(u_i \mid X) = 0 \color{black}\quad \forall i.
+\end{equation}
+By linearity of conditional expectation,
+\begin{equation}
+    \mathbb{E}(\bar{u} \mid X) = \frac{1}{n}\color{red}\sum_{j=1}^n \mathbb{E}(u_j \mid X) = 0\color{black}.
+\end{equation}
+Therefore,
+\begin{equation}
+    \mathbb{E}(u_i - \bar{u} \mid X) = \mathbb{E}(u_i\mid X) - \mathbb{E}(\bar u\mid X)= 0.
+\end{equation}
+\end{definition}
+
+Consequently,
+\begin{equation}
+    \mathbb{E}(\hat{\beta}_1) = \beta_1.
+\end{equation}
+
+This proves that the \textbf{OLS estimator $\hat{\beta}_1$ is unbiased under the classical assumptions}.
+
+\subsection{Asymptotic Variance of the OLS Estimator}
+
+From the previous section, the OLS estimator for the slope coefficient can be written as
+\begin{equation}
+    \hat{\beta}_1 = \beta_1 + \frac{\sum_{i=1}^n (x_i - \bar{x})(u_i - \bar{u})}{\sum_{i=1}^n (x_i - \bar{x})^2}.
+\end{equation}
+
+Notice that the numerator can be equivalently rewritten. Expanding the product yields
+\begin{align}
+    \sum_{i=1}^n (x_i - \bar{x})(u_i - \bar{u}) &= \sum_{i=1}^n (x_i u_i - x_i \bar{u} - \bar{x} u_i + \bar{x} \bar{u}) \\
+    &= \sum_{i=1}^n x_i u_i - \bar{u} \sum_{i=1}^n x_i - \bar{x} \sum_{i=1}^n u_i + n \bar{x} \bar{u}.
+\end{align}
+
+Since $\sum_{i=1}^n x_i = n \bar{x}$ and $\sum_{i=1}^n u_i = n \bar{u}$, the expression simplifies to
+\begin{equation}
+    \sum_{i=1}^n (x_i - \bar{x})(u_i - \bar{u}) = \sum_{i=1}^n (x_i - \bar{x}) u_i.
+\end{equation}
+
+Therefore, the estimator admits the equivalent representation
+\begin{equation}
+    \hat{\beta}_1 = \beta_1 + \frac{\sum_{i=1}^n (x_i - \bar{x})u_i}{\sum_{i=1}^n (x_i - \bar{x})^2}.
+\end{equation}
+
+To study the variance of $\hat{\beta}_1$, we focus on its asymptotic behavior as $n \to \infty$. By the Law of Large Numbers, under standard regularity conditions,
+\begin{equation}
+    \frac{1}{n}\sum_{i=1}^n (x_i - \bar{x})^2 \xrightarrow{p} \mathbb{E}\!\left[(x_i - \mu_x)^2\right] \equiv \sigma_x^2,
+\end{equation}
+where $\mu_x = \mathbb{E}(x_i)$ (it behaves like a constant whenever $n \xrightarrow{p} \infty$), and $\sigma_x^2 = \mathrm{Var}(x_i)$.
+
+Dividing both numerator and denominator by $n$, the estimator can be approximated as
+\begin{equation}
+    \hat{\beta}_1 \approx \beta_1 + \frac{\frac 1 n \sum_{i=1}^n (x_i - \bar{x})u_i}{\frac 1 n \sum_{i=1}^n (x_i - \bar{x})^2} \approx \beta_1 + \frac{\frac{1}{n}\sum_{i=1}^n (x_i - \mu_x)u_i}{\sigma_x^2}.
+\end{equation}
+
+Since $\beta_1$ is a constant (Var($k$)=0), the variance of $\hat{\beta}_1$ is driven by the second term. Hence,
+\begin{equation}
+    \mathrm{Var}(\hat{\beta}_1) \approx \mathrm{Var}\!\left( \frac{1}{\sigma_x^2} \cdot \frac{1}{n}\sum_{i=1}^n (x_i - \mu_x)u_i \right).
+\end{equation}
+
+Using standard properties of the variance operator, we obtain
+\begin{equation}
+    \mathrm{Var}(\hat{\beta}_1) = \frac{1}{\sigma_x^4} \mathrm{Var}\!\left( \frac{1}{n}\sum_{i=1}^n (x_i - \mu_x)u_i \right).
+\end{equation}
+
+Assuming that the observations are independent and identically distributed, the variance of the sum (i.e., the inner parenthesis) satisfies
+\begin{equation}
+    \mathrm{Var}\!\left( \frac{1}{n}\sum_{i=1}^n (x_i - \mu_x)u_i \right) = \frac{1}{n^2} \sum_{i=1}^n \mathrm{Var}\!\left( (x_i - \mu_x)u_i \right).
+\end{equation}
+
+Therefore, the asymptotic variance of the OLS estimator is given by
+\begin{equation}
+    \mathrm{Var}(\hat{\beta}_1) \approx \frac{1}{n\sigma_x^4} \mathrm{Var}\!\left( (x_i - \mu_x)u_i \right).
+\end{equation}
+
+Under homoskedasticity and strict exogeneity, this expression further simplifies to the familiar variance formula.
+
+\section{Matrix Approach to Unbiasedness of the OLS Estimator}
+To generalize the previous results and facilitate multivariate analysis, we now express the OLS estimator and its properties using matrix notation.
+\subsection{The Linear Regression Model in Matrix Form}
+
+Recall the simple linear regression model written for each observation:
+\[
+    y_i = \beta_0 + \beta_1 x_i + u_i, \quad i = 1, \dots, n.
+\]
+
+Instead of writing one equation per observation, we can stack all observations together. This leads to the matrix representation
+\begin{equation}
+    \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{u}.
+\end{equation}
+
+Each object in this expression has a clear interpretation:
+\begin{itemize}
+  \item $\mathbf{y}$ is an $n \times 1$ vector containing all dependent variable observations.
+  \item $\mathbf{X}$ is an $n \times 2$ matrix of regressors. Its first column is a column of ones (corresponding to the intercept), and its second column contains the values of $x_i$.
+  \item $\boldsymbol{\beta} = \binom{\beta_0}{\beta_1}$ is a $2 \times 1$ vector of unknown parameters.
+  \item $\mathbf{u}$ is an $n \times 1$ vector of error terms.
+\end{itemize}
+
+This notation does not change the model; it simply rewrites the same information in a compact form.
+
+\subsection{The OLS Estimator in Matrix Notation}
+
+As in the scalar case, the Ordinary Least Squares (OLS) method chooses the parameter vector that minimizes the sum of squared residuals. In matrix notation, the vector of residuals is defined as
+\[
+    \mathbf{u} = \mathbf{y} - \mathbf{X}\boldsymbol{\beta}.
+\]
+
+The sum of squared residuals, $\sum_{i=1}^n u_i^2$, can be written compactly as the scalar product
+\begin{equation}
+    \mathbf{u}'\mathbf{u} = (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})' (\mathbf{y} - \mathbf{X}\boldsymbol{\beta}),
+\end{equation}
+since the inner product of a vector with itself equals the sum of the squares of its components.
+
+The OLS problem therefore consists of minimizing this scalar expression with respect to $\boldsymbol{\beta}$.
+
+To find the minimizer, we differentiate the objective function with respect to $\boldsymbol{\beta}$. To do so, we first expand the expression:
+\begin{equation}
+    (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})' (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
+    = \mathbf{y}'\mathbf{y} - 2\boldsymbol{\beta}'\mathbf{X}'\mathbf{y} + \boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}.
+\end{equation}
+
+We now differentiate term by term:
+\begin{itemize}
+\item The term $\mathbf{y}'\mathbf{y}$ does not depend on $\boldsymbol{\beta}$ and therefore its derivative is zero.
+\item The term $-2\boldsymbol{\beta}'\mathbf{X}'\mathbf{y}$ is linear in $\boldsymbol{\beta}$, and its derivative is $-2\mathbf{X}'\mathbf{y}$.
+\item The term $\boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}$ is a quadratic form. Since $\mathbf{X}'\mathbf{X}$ is symmetric, its derivative is $2\mathbf{X}'\mathbf{X}\boldsymbol{\beta}$.
+\end{itemize}
+
+Adding the derivatives and setting the result equal to zero yields the first-order condition
+\begin{equation}
+    -2\mathbf{X}'\mathbf{y} + 2\mathbf{X}'\mathbf{X}\boldsymbol{\beta} = \mathbf{0}.
+\end{equation}
+
+Rearranging terms leads to the so-called \emph{normal equations}:
+\begin{equation}
+    \mathbf{X}'\mathbf{X}\boldsymbol{\beta} = \mathbf{X}'\mathbf{y}.
+\end{equation}
+
+Provided that the matrix $\mathbf{X}'\mathbf{X}$ is invertible, this system has a unique solution. Solving for $\boldsymbol{\beta}$ gives
+\begin{equation}
+    \hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}.
+\end{equation}
+
+This expression is the OLS estimator in matrix form. It is the direct matrix analogue of the scalar estimator derived earlier and naturally extends to models with multiple regressors.
+
+\subsection{Expressing the Estimator in Terms of the Error Term}
+
+To study the statistical properties of the estimator, substitute the true model $\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{u}$ into the OLS formula:
+\[
+    \hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\mathbf{X}\boldsymbol{\beta} + \mathbf{u}).
+\]
+
+Using basic properties of matrix multiplication, this expression can be rewritten as
+\begin{align}
+    \hat{\boldsymbol{\beta}} &= (\mathbf{X}'\mathbf{X})^{-1}(\mathbf{X}'\mathbf{X}\boldsymbol{\beta} + \mathbf{X}'\mathbf{u}) \\
+    &= (\mathbf{X}'\mathbf{X})^{-1}(\mathbf{X}'\mathbf{X})\boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}(\mathbf{X}'\mathbf{u}) \\
+    &= \mathbf{I}\boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}, \quad \text{since } (\mathbf{X}'\mathbf{X})^{-1}(\mathbf{X}'\mathbf{X})=\mathbf{I} \\
+    \hat{\boldsymbol{\beta}} &= \boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}.
+\end{align}
+
+This result is fundamental. It shows that the OLS estimator equals the true parameter vector plus a term that depends on the error vector.
+
+\subsection{Taking Conditional Expectations}
+
+To determine whether the estimator is unbiased, we compute its conditional expectation given the matrix of regressors $\mathbf{X}$:
+\begin{equation}
+    \mathbb{E}(\hat{\boldsymbol{\beta}} \mid \mathbf{X}) = \boldsymbol{\beta} + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbb{E}(\mathbf{u} \mid \mathbf{X}).
+\end{equation}
+
+At this point, the key assumption enters the analysis.
+
+\subsection{Strict Exogeneity in Matrix Form}
+
+In the scalar approach, strict exogeneity was stated as
+\[
+    \mathbb{E}(u_i \mid X) = 0 \quad \forall i.
+\]
+
+In matrix notation, this assumption becomes
+\begin{equation}
+    \mathbb{E}(\mathbf{u} \mid \mathbf{X}) = \mathbf{0}.
+\end{equation}
+
+That is, the entire vector of error terms has zero conditional mean given the regressors. Substituting this into the previous expression yields
+\begin{equation}
+    \mathbb{E}(\hat{\boldsymbol{\beta}} \mid \mathbf{X}) = \boldsymbol{\beta}.
+\end{equation}
+
+\subsection{Unconditional Expectation and Unbiasedness}
+
+Finally, applying the Law of Iterated Expectations,
+\begin{equation}
+    \mathbb{E}(\hat{\boldsymbol{\beta}}) = \mathbb{E}\!\left[ \mathbb{E}(\hat{\boldsymbol{\beta}} \mid \mathbf{X}) \right] = \boldsymbol{\beta}.
+\end{equation}
+
+Therefore, the OLS estimator is unbiased.
+
+\end{document}
